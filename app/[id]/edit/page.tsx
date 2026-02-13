@@ -2,13 +2,14 @@
 import { notFound } from "next/navigation";
 import RecordForm from "@/components/RecordForm";
 import { updateRecord } from "@/lib/actions";
+import { getBaseUrl } from "@/lib/base-url";
 import type { Record as AppRecord } from "@/lib/types";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function Edit({ params }: Props) {
   const { id } = await params;
-  const res = await fetch(`http://localhost:3000/api/records/${id}`, { cache: "no-store" });
+  const res = await fetch(`${getBaseUrl()}/api/records/${id}`, { cache: "no-store" });
   if (res.status === 404) notFound();
   if (!res.ok) throw new Error("Failed to fetch record");
 

@@ -1,8 +1,9 @@
 // app/page.tsx
 import HomeClient from "@/components/HomeClient";
+import { getBaseUrl } from "@/lib/base-url";
 
 export default async function Home() {
-  const res = await fetch("/api/records", { cache: "no-store" });
+  const res = await fetch(`${getBaseUrl()}/api/records`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch records");
   const { records, baseYmd } = await res.json();
 
