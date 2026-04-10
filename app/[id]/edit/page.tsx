@@ -1,19 +1,15 @@
-// app/[id]/page.tsx
 import { notFound } from "next/navigation";
 import RecordForm from "@/components/RecordForm";
 import { updateRecord } from "@/lib/actions";
-import { getBaseUrl } from "@/lib/base-url";
-import type { Record as AppRecord } from "@/lib/types";
+import { dbGetRecordById } from "@/lib/database";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function Edit({ params }: Props) {
   const { id } = await params;
-  const res = await fetch(`${getBaseUrl()}/api/records/${id}`, { cache: "no-store" });
-  if (res.status === 404) notFound();
-  if (!res.ok) throw new Error("Failed to fetch record");
+  const rec = await dbGetRecordById(Number(id));
 
-  const rec: AppRecord = await res.json();
+  if (!rec) notFound();
 
   return (
     <div className="space-y-6">
@@ -27,7 +23,10 @@ export default async function Edit({ params }: Props) {
           title="記録を編集"
           submitLabel="更新"
           initialDate={rec.date}
-          initialRows={rec.exercises.map((ex) => ({ exercise: ex.exercise, minutes: ex.minutes }))}
+          initialRows={rec.exercises.map((ex) => ({
+            exercise: ex.exercise,
+            minutes: ex.minutes,
+          }))}
           action={updateRecord.bind(null, rec.id)}
         />
       </section>

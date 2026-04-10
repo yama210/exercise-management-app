@@ -1,11 +1,20 @@
-// app/page.tsx
 import HomeClient from "@/components/HomeClient";
-import { getBaseUrl } from "@/lib/base-url";
+import { dbGetAllRecords } from "@/lib/database";
+
+function todayYmdInJST(): string {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60_000;
+  const jstMs = utcMs + 9 * 60 * 60_000;
+  const jst = new Date(jstMs);
+  const y = jst.getUTCFullYear();
+  const m = String(jst.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(jst.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
 
 export default async function Home() {
-  const res = await fetch(`${getBaseUrl()}/api/records`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch records");
-  const { records, baseYmd } = await res.json();
+  const records = await dbGetAllRecords();
+  const baseYmd = todayYmdInJST();
 
   return (
     <div className="space-y-6">
